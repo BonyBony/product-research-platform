@@ -1,0 +1,48 @@
+{
+  "pain_points": [
+    {
+      "description": "Same here! I never know what to make and by the time lunch rolls around I'm too hungry to think.",
+      "quote": "Same here! I never know what to make and by the time lunch rolls around I'm too hungry to think. So I just grab whatever is easiest, which is usually junk food or expensive delivery.",
+      "severity": "High",
+      "source_url": "https://reddit.com/r/WorkFromHome/mock/post1",
+      "frequency": 1
+    },
+    {
+      "description": "I tried meal prepping on Sundays but by Wednesday I'm sick of eating the same thing.",
+      "quote": "I tried meal prepping on Sundays but by Wednesday I'm sick of eating the same thing. Plus I don't have a big enough fridge to store everything.",
+      "severity": "Medium",
+      "source_url": "https://reddit.com/r/remote/mock/post2",
+      "frequency": 1
+    },
+    {
+      "description": "YES! I either skip meals completely because I'm in the zone working, or I'm constantly snacking.",
+      "quote": "YES! I either skip meals completely because I'm in the zone working, or I'm constantly snacking. There's no in-between. The structure of office life helped regulate my eating.",
+      "severity": "High",
+      "source_url": "https://reddit.com/r/WorkFromHome/mock/post3",
+      "frequency": 1
+    },
+    {
+      "description": "Lack of meal planning leads to unhealthy food choices and expensive takeout orders",
+      "quote": "I never know what to make and by the time lunch rolls around I'm too hungry to think. So I just grab whatever is easiest, which is usually junk food or expensive delivery.",
+      "severity": "High",
+      "source_url": "https://reddit.com/r/WorkFromHome/mock/post1",
+      "frequency": 3
+    },
+    {
+      "description": "Decision fatigue from having to plan every meal while working from home",
+      "quote": "The mental load of deciding what to eat three times a day on top of work is exhausting. I never realized how much cognitive energy goes into meal planning.",
+      "severity": "Medium",
+      "source_url": "https://reddit.com/r/remote/mock/post2",
+      "frequency": 2
+    },
+    {
+      "description": "Food waste from buying groceries without proper planning or recipes",
+      "quote": "I waste so much food because I buy groceries with good intentions but then don't use them. Vegetables go bad before I get around to cooking them.",
+      "severity": "Medium",
+      "source_url": "https://reddit.com/r/WorkFromHome/mock/post3",
+      "frequency": 2
+    }
+  ],
+  "total_posts_analyzed": 5,
+  "total_comments_analyzed": 20
+}

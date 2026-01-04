@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResearchAI - User Persona Generator</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>ResearchAI</h1>
+            <p class="subtitle">AI-Powered User Persona Generator</p>
+        </header>
+
+        <div class="research-form">
+            <h2>Generate User Personas</h2>
+            <form id="researchForm">
+                <div class="form-group">
+                    <label for="problemStatement">Problem Statement</label>
+                    <textarea
+                        id="problemStatement"
+                        name="problemStatement"
+                        rows="4"
+                        placeholder="e.g., Users in Bangalore are ordering groceries from multiple apps like Zepto, Blinkit, and Instamart, but face confusion about where to order from, what's the best deal, and delivery reliability."
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="targetUsers">Target Users</label>
+                    <input
+                        type="text"
+                        id="targetUsers"
+                        name="targetUsers"
+                        placeholder="e.g., Urban consumers in India using quick commerce apps"
+                        required
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="dataSource">Data Source</label>
+                    <select id="dataSource" name="dataSource">
+                        <option value="auto" selected>Auto (Recommended)</option>
+                        <option value="youtube">YouTube - Consumer Products & Apps</option>
+                        <option value="hackernews">Hacker News - Tech & Developer Tools</option>
+                        <option value="reddit">Reddit Discussions</option>
+                        <option value="producthunt">Product Hunt Reviews</option>
+                        <option value="demo">Demo (Mock Data)</option>
+                    </select>
+                    <small class="help-text">YouTube works best for consumer apps. HackerNews is free and great for tech/developer products!</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="numPersonas">Number of Personas</label>
+                    <select id="numPersonas" name="numPersonas">
+                        <option value="2">2 Personas</option>
+                        <option value="3" selected>3 Personas</option>
+                        <option value="4">4 Personas</option>
+                        <option value="5">5 Personas</option>
+                    </select>
+                </div>
+
+                <button type="submit" id="generateBtn" class="btn-primary">
+                    Generate Personas
+                </button>
+            </form>
+        </div>
+
+        <div id="loadingState" class="loading-state" style="display: none;">
+            <div class="spinner"></div>
+            <p id="loadingText">Analyzing user research...</p>
+        </div>
+
+        <div id="errorState" class="error-state" style="display: none;">
+            <p id="errorText"></p>
+        </div>
+
+        <div id="painPointsSection" style="display: none;">
+            <h2>Pain Points Discovered</h2>
+            <div id="painPointsList" class="pain-points-list"></div>
+        </div>
+
+        <div id="personasSection" style="display: none;">
+            <div class="personas-header">
+                <h2>User Personas</h2>
+                <p class="personas-count" id="personasCount"></p>
+            </div>
+            <div id="personasGrid" class="personas-grid"></div>
+        </div>
+
+        <div id="prioritizeSection" style="display: none;">
+            <div class="prioritize-prompt">
+                <h2>🎯 Ready to Prioritize?</h2>
+                <p>Use JTBD + RICE framework to identify which pain point to solve first</p>
+                <button id="prioritizeBtn" class="btn-primary" onclick="prioritizePainPoints()">
+                    Prioritize Pain Points
+                </button>
+            </div>
+        </div>
+
+        <div id="prioritizationResults" style="display: none;">
+            <div class="prioritization-header">
+                <h2>📊 Prioritization Results</h2>
+                <p class="methodology-text">Methodology: JTBD + RICE Hybrid (40% JTBD + 40% RICE + 20% Persona Alignment)</p>
+            </div>
+            <div id="prioritizationGrid" class="prioritization-grid"></div>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

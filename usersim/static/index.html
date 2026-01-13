@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UserSim - Virtual User Behavior Simulator</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>🎭 UserSim</h1>
+            <p class="tagline">Build Users Before Building Software</p>
+            <p class="subtitle">AI-powered virtual user behavior simulation with churn probability analysis</p>
+        </header>
+
+        <!-- Input Form -->
+        <section id="inputSection" class="section">
+            <h2>Define Your Product</h2>
+
+            <form id="simulationForm">
+                <div class="form-group">
+                    <label for="problemStatement">Problem Statement</label>
+                    <textarea
+                        id="problemStatement"
+                        rows="3"
+                        placeholder="e.g., Users need to find the cheapest cab option across multiple apps without manually checking each one"
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="targetUsers">Target Users</label>
+                    <input
+                        type="text"
+                        id="targetUsers"
+                        placeholder="e.g., Daily commuters in Bangalore who are price-sensitive"
+                        required
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="productFlow">Product Flow (3-5 steps)</label>
+                    <textarea
+                        id="productFlow"
+                        rows="5"
+                        placeholder="Describe how your product should work:&#10;1. User enters destination&#10;2. System compares prices across Uber, Ola, Rapido&#10;3. User selects cheapest option&#10;4. Redirects to selected app&#10;5. User books cab"
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="numScenarios">Number of Scenarios</label>
+                    <input
+                        type="number"
+                        id="numScenarios"
+                        min="3"
+                        max="10"
+                        value="5"
+                    />
+                    <small>Includes 1 happy path + edge cases/failures</small>
+                </div>
+
+                <button type="submit" id="simulateBtn" class="btn-primary">
+                    <span>Generate Virtual User & Simulate Scenarios</span>
+                </button>
+            </form>
+        </section>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading-state" style="display: none;">
+            <div class="spinner"></div>
+            <p>Creating virtual user and simulating scenarios...</p>
+            <small>This may take 30-60 seconds</small>
+        </div>
+
+        <!-- Virtual User Profile -->
+        <section id="userProfileSection" class="section" style="display: none;">
+            <h2>👤 Virtual User Profile</h2>
+            <div id="userProfileCard" class="user-profile-card"></div>
+        </section>
+
+        <!-- Scenarios -->
+        <section id="scenariosSection" class="section" style="display: none;">
+            <h2>🎬 Scenario Simulations</h2>
+            <div id="scenariosContainer"></div>
+        </section>
+
+        <!-- Summary Insights -->
+        <section id="summarySection" class="section" style="display: none;">
+            <h2>📊 Summary & Recommendations</h2>
+
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <h3>Key Insights</h3>
+                    <ul id="summaryInsights"></ul>
+                </div>
+
+                <div class="insight-card churn-hotspots">
+                    <h3>⚠️ Churn Hotspots</h3>
+                    <ul id="churnHotspots"></ul>
+                </div>
+
+                <div class="insight-card recommendations">
+                    <h3>💡 Recommendations</h3>
+                    <ul id="recommendations"></ul>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

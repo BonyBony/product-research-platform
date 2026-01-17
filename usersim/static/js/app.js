@@ -9,6 +9,20 @@ const userProfileSection = document.getElementById('userProfileSection');
 const scenariosSection = document.getElementById('scenariosSection');
 const summarySection = document.getElementById('summarySection');
 
+// Check for imported persona from ResearchAI on page load
+window.addEventListener('DOMContentLoaded', () => {
+    const importedData = localStorage.getItem('researchai_persona_export');
+    if (importedData) {
+        try {
+            const data = JSON.parse(importedData);
+            showImportNotification(data);
+            autoFillFromPersona(data);
+        } catch (e) {
+            console.error('Error loading imported persona:', e);
+        }
+    }
+});
+
 // Form submission
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -19,6 +33,13 @@ form.addEventListener('submit', async (e) => {
         product_flow: document.getElementById('productFlow').value,
         num_scenarios: parseInt(document.getElementById('numScenarios').value)
     };
+
+    // Check if we have imported persona
+    const importedData = localStorage.getItem('researchai_persona_export');
+    if (importedData) {
+        const data = JSON.parse(importedData);
+        formData.persona_data = data.persona;
+    }
 
     await runSimulation(formData);
 });
@@ -293,4 +314,86 @@ function formatTime(seconds) {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}m ${secs}s`;
+}
+
+// ResearchAI Integration Functions
+function showImportNotification(data) {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 1000;
+        animation: slideIn 0.3s ease-out;
+    `;
+    notification.innerHTML = `
+        <strong>✓ Persona Imported from ResearchAI</strong><br>
+        <small>${data.persona.name} - ${data.persona.occupation}</small>
+        <button onclick="this.parentElement.remove(); localStorage.removeItem('researchai_persona_export');"
+                style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 0.25rem 0.5rem; border-radius: 0.25rem; margin-left: 1rem; cursor: pointer;">
+            Clear
+        </button>
+    `;
+
+    document.body.appendChild(notification);
+
+    // Auto-hide after 10 seconds
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.remove();
+        }
+    }, 10000);
+}
+
+function autoFillFromPersona(data) {
+    // Auto-fill form fields
+    document.getElementById('problemStatement').value = data.problem_statement || '';
+    document.getElementById('targetUsers').value = data.target_users || '';
+
+    // Generate suggested product flow from persona pain points
+    const persona = data.persona;
+    if (persona && persona.pain_points && persona.pain_points.length > 0) {
+        const suggestedFlow = generateProductFlowFromPersona(persona);
+        document.getElementById('productFlow').value = suggestedFlow;
+    }
+
+    // Highlight that form is pre-filled
+    const form = document.getElementById('simulationForm');
+    form.style.border = '2px solid #667eea';
+    form.style.borderRadius = '1rem';
+    form.style.padding = '1.5rem';
+
+    // Add a note
+    const note = document.createElement('div');
+    note.style.cssText = `
+        background: #e0e7ff;
+        color: #4338ca;
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+        font-size: 0.875rem;
+    `;
+    note.innerHTML = `
+        <strong>📝 Form pre-filled from ResearchAI persona:</strong> ${persona.name}<br>
+        <small>Adjust the product flow to match your specific use case, then click simulate.</small>
+    `;
+    form.insertBefore(note, form.firstChild);
+}
+
+function generateProductFlowFromPersona(persona) {
+    // Generate a basic product flow based on persona's context
+    const flows = [
+        `1. User opens the application`,
+        `2. User encounters their main pain point: ${persona.pain_points[0] || 'issue with current solution'}`,
+        `3. System offers a solution addressing: ${persona.goals[0] || 'their primary goal'}`,
+        `4. User interacts with the feature`,
+        `5. User achieves their goal or faces obstacles`
+    ];
+
+    return flows.join('\n');
 }

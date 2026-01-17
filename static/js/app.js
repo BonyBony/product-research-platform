@@ -268,6 +268,12 @@ function createPersonaCard(persona, index) {
                     ${persona.tech_savviness} Tech Savviness
                 </div>
             </div>
+
+            <div class="persona-actions">
+                <button class="btn-export-usersim" onclick="exportToUserSim(${index})">
+                    🎭 Simulate User Behavior →
+                </button>
+            </div>
         </div>
     `;
 
@@ -524,4 +530,26 @@ function toggleDetails(btn) {
     const card = btn.closest('.priority-card');
     card.classList.toggle('expanded');
     btn.textContent = card.classList.contains('expanded') ? 'Show Less ▲' : 'Show Full Analysis ▼';
+}
+
+// Integration with UserSim
+function exportToUserSim(personaIndex) {
+    const persona = currentPersonas[personaIndex];
+
+    // Store persona data in localStorage for UserSim to import
+    const exportData = {
+        persona: persona,
+        problem_statement: currentFormData.problem_statement,
+        target_users: currentFormData.target_users,
+        pain_points: currentPainPoints,
+        timestamp: new Date().toISOString()
+    };
+
+    localStorage.setItem('researchai_persona_export', JSON.stringify(exportData));
+
+    // Open UserSim in new tab
+    window.open('http://localhost:8001', '_blank');
+
+    // Show confirmation
+    alert(`✅ Persona "${persona.name}" exported!\n\nUserSim will open in a new tab and auto-import the persona.`);
 }

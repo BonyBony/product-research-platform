@@ -303,6 +303,131 @@ Make the user realistic and specific to the problem domain."""
         self, persona_data: Dict, problem_statement: str
     ) -> VirtualUser:
         """Convert ResearchAI persona to VirtualUser format"""
-        # This would map persona fields to virtual user fields
-        # Implementation depends on ResearchAI persona structure
-        pass
+        from app.models.user_profile import (
+            SensitivityAttribute,
+            BehavioralTrait,
+            FrustrationTrigger,
+            PatienceLevel,
+        )
+
+        # Extract basic info
+        persona = persona_data
+
+        # Map tech savviness to patience level (heuristic: tech-savvy users are often less patient)
+        tech_savvy = persona.get('tech_savviness', 'Medium').lower()
+        patience_map = {
+            'low': PatienceLevel.HIGH,      # Low tech savvy = more patient
+            'medium': PatienceLevel.MEDIUM,
+            'high': PatienceLevel.LOW       # High tech savvy = less patient
+        }
+        patience_level = patience_map.get(tech_savvy, PatienceLevel.MEDIUM)
+
+        # Build sensitivities from goals and frustrations
+        sensitivities = []
+
+        # Detect price sensitivity from goals/pain points
+        price_keywords = ['cheap', 'save', 'money', 'affordable', 'cost', 'price', 'budget']
+        price_mentions = sum(1 for goal in persona.get('goals', []) if any(kw in goal.lower() for kw in price_keywords))
+        price_mentions += sum(1 for pp in persona.get('pain_points', []) if any(kw in pp.lower() for kw in price_keywords))
+        if price_mentions > 0:
+            sensitivities.append(SensitivityAttribute(
+                name="price_sensitivity",
+                level=min(10, 6 + price_mentions * 2),
+                description="Values affordability and cost savings"
+            ))
+
+        # Detect time sensitivity
+        time_keywords = ['time', 'quick', 'fast', 'slow', 'wait', 'delay', 'speed']
+        time_mentions = sum(1 for frust in persona.get('frustrations', []) if any(kw in frust.lower() for kw in time_keywords))
+        if time_mentions > 0 or 'busy' in persona.get('background', '').lower():
+            sensitivities.append(SensitivityAttribute(
+                name="time_sensitivity",
+                level=min(10, 5 + time_mentions * 2),
+                description="Values speed and efficiency"
+            ))
+
+        # Detect quality sensitivity
+        quality_keywords = ['quality', 'reliable', 'trust', 'professional', 'good']
+        quality_mentions = sum(1 for goal in persona.get('goals', []) if any(kw in goal.lower() for kw in quality_keywords))
+        if quality_mentions > 0:
+            sensitivities.append(SensitivityAttribute(
+                name="quality_sensitivity",
+                level=min(10, 4 + quality_mentions * 2),
+                description="Values quality and reliability"
+            ))
+
+        # Build behavioral traits
+        traits = []
+
+        # Tech savviness
+        tech_value_map = {'low': 3, 'medium': 6, 'high': 9}
+        traits.append(BehavioralTrait(
+            name="tech_savvy",
+            value=tech_value_map.get(tech_savvy, 6),
+            description=f"{persona.get('tech_savviness', 'Medium')} comfort with technology"
+        ))
+
+        # Patience (inverse of tech savviness for typical users)
+        patience_value_map = {
+            PatienceLevel.LOW: 3,
+            PatienceLevel.MEDIUM: 5,
+            PatienceLevel.HIGH: 8
+        }
+        traits.append(BehavioralTrait(
+            name="patience",
+            value=patience_value_map.get(patience_level, 5),
+            description=f"{patience_level.value.title()} patience level"
+        ))
+
+        # Brand loyalty (detect from behaviors)
+        loyalty_keywords = ['loyal', 'always use', 'prefer', 'stick to', 'brand']
+        has_loyalty = any(any(kw in behavior.lower() for kw in loyalty_keywords)
+                         for behavior in persona.get('behaviors', []))
+        traits.append(BehavioralTrait(
+            name="brand_loyalty",
+            value=7 if has_loyalty else 3,
+            description="High brand loyalty" if has_loyalty else "Low brand loyalty, willing to switch"
+        ))
+
+        # Build frustration triggers from frustrations
+        frustration_triggers = []
+        for frustration in persona.get('frustrations', [])[:3]:  # Top 3
+            # Detect trigger type
+            if any(kw in frustration.lower() for kw in ['wait', 'slow', 'delay', 'time']):
+                frustration_triggers.append(FrustrationTrigger(
+                    trigger="long_wait",
+                    threshold=300,  # 5 minutes
+                    impact=30
+                ))
+            elif any(kw in frustration.lower() for kw in ['price', 'cost', 'expensive', 'money']):
+                frustration_triggers.append(FrustrationTrigger(
+                    trigger="unexpected_cost",
+                    threshold=20,  # 20% price increase
+                    impact=25
+                ))
+            elif any(kw in frustration.lower() for kw in ['quality', 'poor', 'bad', 'unreliable']):
+                frustration_triggers.append(FrustrationTrigger(
+                    trigger="poor_quality",
+                    threshold=1,
+                    impact=20
+                ))
+            else:
+                frustration_triggers.append(FrustrationTrigger(
+                    trigger="feature_unavailable",
+                    threshold=1,
+                    impact=15
+                ))
+
+        return VirtualUser(
+            name=persona.get('name', 'Unknown User'),
+            age=persona.get('age', 30),
+            occupation=persona.get('occupation', 'Professional'),
+            location=persona.get('location', 'India'),
+            problem_context=persona.get('background', problem_statement),
+            primary_goal=persona.get('goals', ['Achieve their goal'])[0] if persona.get('goals') else 'Achieve their goal',
+            sensitivities=sensitivities,
+            traits=traits,
+            patience_level=patience_level,
+            frustration_triggers=frustration_triggers,
+            persona_source=f"ResearchAI: {persona.get('name', 'Unknown')}"
+        )
